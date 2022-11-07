@@ -141,7 +141,7 @@ p2 <- ggplot(training.subSetTrain, aes(classe, magnet_arm_x)) +
 multiplot(p1,p2,cols=2)
 ```
 
-![](project_files/figure-html/unnamed-chunk-9-1.png)
+![](index_files/figure-html/unnamed-chunk-9-1.png)
 
 Clearly there is no hard seperation of classes possible using only these 'highly' correlated features.
 Let's train some models to get closer to a way of predicting these classe's
@@ -161,7 +161,7 @@ excludeColumns <- c(highlyCorrelated, classeIndex)
 corrplot(correlationMatrix, method="color", type="lower", order="hclust", tl.cex=0.70, tl.col="black", tl.srt = 45, diag = FALSE)
 ```
 
-![](project_files/figure-html/unnamed-chunk-10-1.png)
+![](index_files/figure-html/unnamed-chunk-10-1.png)
 
 We see that there are some features that aree quite correlated with each other.
 We will have a model with these excluded. Also we'll try and reduce the features by running PCA on all and the excluded subset of the features
@@ -468,7 +468,7 @@ We'll stick with the `rfMod.exclude` model as the best model to use for predicti
 Because with an accuracy of 98.7% and an estimated OOB error rate of 0.23% this is the best model.
 
 
-Before doing the final prediction we will examine the chosen model more in depth using some plots
+Before doing the final prediction we will examine the chosen model more in depth using some plots.
 
 
 ```r
@@ -477,50 +477,10 @@ varImpPlot(rfMod.exclude, cex=0.7, pch=16, main='Variable Importance Plot: rfMod
 plot(rfMod.exclude, , cex=0.7, main='Error vs No. of trees plot')
 ```
 
-![](project_files/figure-html/unnamed-chunk-14-1.png)
+![](index_files/figure-html/unnamed-chunk-14-1.png)
 
 ```r
 par(mfrow=c(1,1)) 
-```
-
-To really look in depth at the distances between predictions we can use MDSplot and cluster predictiosn and results
-
-
-```r
-start <- proc.time()
-
-library(RColorBrewer)
-palette <- brewer.pal(length(classeLevels), "Set1")
-rfMod.mds <- MDSplot(rfMod.exclude, as.factor(classeLevels), k=2, pch=20, palette=palette)
-```
-
-![](project_files/figure-html/unnamed-chunk-15-1.png)
-
-```r
-library(cluster)
-rfMod.pam <- pam(1 - rfMod.exclude$proximity, k=length(classeLevels), diss=TRUE)
-
-plot(
-  rfMod.mds$points[, 1], 
-  rfMod.mds$points[, 2], 
-  pch=rfMod.pam$clustering+14, 
-  col=alpha(palette[as.numeric(training.subSetTrain$classe)],0.5), 
-  bg=alpha(palette[as.numeric(training.subSetTrain$classe)],0.2), 
-  cex=0.5,
-  xlab="x", ylab="y")
-legend("bottomleft", legend=unique(rfMod.pam$clustering), pch=seq(15,14+length(classeLevels)), title = "PAM cluster")
-  legend("topleft", legend=classeLevels, pch = 16, col=palette, title = "Classification")
-```
-
-![](project_files/figure-html/unnamed-chunk-15-2.png)
-
-```r
-proc.time() - start
-```
-
-```
-##     user   system  elapsed 
-## 4832.341   57.977 4936.684
 ```
 
 
