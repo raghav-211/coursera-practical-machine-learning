@@ -263,39 +263,13 @@ We'll stick with the `rfMod.exclude` model as the best model to use for predicti
 Because with an accuracy of 98.7% and an estimated OOB error rate of 0.23% this is the best model.
 
 
-Before doing the final prediction we will examine the chosen model more in depth using some plots
+Before doing the final prediction we will examine the chosen model more in depth using some plots.
 
 ```{r}
 par(mfrow=c(1,2)) 
 varImpPlot(rfMod.exclude, cex=0.7, pch=16, main='Variable Importance Plot: rfMod.exclude')
 plot(rfMod.exclude, , cex=0.7, main='Error vs No. of trees plot')
 par(mfrow=c(1,1)) 
-```
-
-To really look in depth at the distances between predictions we can use MDSplot and cluster predictiosn and results
-
-```{r}
-start <- proc.time()
-
-library(RColorBrewer)
-palette <- brewer.pal(length(classeLevels), "Set1")
-rfMod.mds <- MDSplot(rfMod.exclude, as.factor(classeLevels), k=2, pch=20, palette=palette)
-
-library(cluster)
-rfMod.pam <- pam(1 - rfMod.exclude$proximity, k=length(classeLevels), diss=TRUE)
-
-plot(
-  rfMod.mds$points[, 1], 
-  rfMod.mds$points[, 2], 
-  pch=rfMod.pam$clustering+14, 
-  col=alpha(palette[as.numeric(training.subSetTrain$classe)],0.5), 
-  bg=alpha(palette[as.numeric(training.subSetTrain$classe)],0.2), 
-  cex=0.5,
-  xlab="x", ylab="y")
-legend("bottomleft", legend=unique(rfMod.pam$clustering), pch=seq(15,14+length(classeLevels)), title = "PAM cluster")
-  legend("topleft", legend=classeLevels, pch = 16, col=palette, title = "Classification")
-
-proc.time() - start
 ```
 
 
